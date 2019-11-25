@@ -70,7 +70,7 @@ async function commitAndPush({
   await exec("git", ["checkout", "-b", branch]);
   await exec("git", ["add", "yarn.lock"]);
   await exec("git", ["commit", "-m", message]);
-  const origin = `https://${owner}:${token}@github.com/${owner}/${repo}.git`;
+  const origin = `https://${token}:x-oauth-basic@github.com/${owner}/${repo}.git`;
   await exec("git", ["remote", "set-url", "origin", origin]);
   await exec("git", ["push", "origin", branch]);
 }
