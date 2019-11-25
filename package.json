@@ -1,0 +1,17 @@
+{
+  "name": "actions-yarn-audit-fix",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/loilo-inc/actions-yarn-audit-fix",
+  "author": "keroxp <kerokerokerop@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.2.0",
+    "@actions/github": "^1.1.0"
+  },
+  "devDependencies": {
+    "@zeit/ncc": "^0.20.5",
+    "prettier": "^1.19.1",
+    "typescript": "^3.7.2"
+  }
+}
