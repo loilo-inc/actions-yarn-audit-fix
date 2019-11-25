@@ -17,5 +17,5 @@ inputs:
     default: "no-reply-actions@github.com"
     required: false
 runs:
-    using: "node12"
+  using: "node12"
   main: "lib/index.js"
