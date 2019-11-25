@@ -141,5 +141,12 @@ if (require.main === module) {
   if (!token) {
     throw new Error("github-token is required");
   }
-  main({ owner, repo, token, user, email });
+  main({ owner, repo, token, user, email })
+    .then(() => {
+      process.exit(0);
+    })
+    .catch(err => {
+      console.error(err);
+      process.exit(1);
+    });
 }
