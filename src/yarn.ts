@@ -68,12 +68,13 @@ export type AuditAdvisory = {
 export function parseAuditJsons(stdout: string): AuditResult {
   const list = stdout
     .split("\n")
+    .filter(line => line.trim())
+    .filter(line => line.startsWith("{"))
     .map(line => {
       try {
         return JSON.parse(line)
       } catch (e) {
-        console.error("failed to parse json: ", e);
-        console.error(line);
+        console.error(`failed to parse json: line = '${line}' `, e);
       }
     }).filter(v => v != null);
   return list;
@@ -85,7 +86,7 @@ export async function getAuditResults(cwd: string): Promise<AuditResult> {
       "yarn audit --json",
       {
         env: process.env,
-        cwd
+        cwd,
       },
       (error, stdout) => {
         if (!error) {
