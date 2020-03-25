@@ -1,3 +1,5 @@
+import * as cp from "child_process";
+
 export function isAdvisory(x): x is AuditAdvisory {
   return typeof x === "object" && x["type"] === "auditAdvisory";
 }
@@ -62,3 +64,40 @@ export type AuditAdvisory = {
     };
   };
 };
+
+export function parseAuditJsons(stdout: string): AuditResult {
+  const list = stdout
+    .split("\n")
+    .map(line => {
+      try {
+        return JSON.parse(line)
+      } catch (e) {
+        console.error("failed to parse json: ", e);
+        console.error(line);
+      }
+    }).filter(v => v != null);
+  return list;
+}
+
+export async function getAuditResults(cwd: string): Promise<AuditResult> {
+  return new Promise((resolve, reject) => {
+    cp.exec(
+      "yarn audit --json",
+      {
+        env: process.env,
+        cwd
+      },
+      (error, stdout) => {
+        if (!error) {
+          resolve([]);
+        } else {
+          try {          
+            resolve(parseAuditJsons(stdout));
+          } catch (e) {
+            reject(e);
+          }
+        }
+      }
+    );
+  });
+}

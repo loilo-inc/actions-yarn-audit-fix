@@ -1,33 +1,7 @@
 import * as cp from "child_process";
 import * as core from "@actions/core";
 import * as github from "@actions/github";
-import { AuditResult, isAdvisory } from "./yarn";
-
-async function getAuditResults(): Promise<AuditResult> {
-  return new Promise((resolve, reject) => {
-    cp.exec(
-      "yarn audit --json",
-      {
-        env: process.env
-      },
-      (error, stdout) => {
-        if (!error) {
-          resolve([]);
-        } else {
-          try {
-            const list = stdout
-              .split("\n")
-              .filter(Boolean)
-              .map(line => JSON.parse(line));
-            resolve(list);
-          } catch (e) {
-            reject(e);
-          }
-        }
-      }
-    );
-  });
-}
+import { AuditResult, isAdvisory, parseAuditJsons, getAuditResults } from "./yarn";
 
 async function exec(cmd: string, args: string[]): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -88,7 +62,7 @@ async function main({
   user: string;
   email: string;
 }) {
-  const results = await getAuditResults();
+  const results = await getAuditResults(process.cwd());
   const packages = new Set<string>();
   let vulCnt = 0;
   for (const item of results) {

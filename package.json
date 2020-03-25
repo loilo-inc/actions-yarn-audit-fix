@@ -9,9 +9,15 @@
     "@actions/core": "^1.2.0",
     "@actions/github": "^1.1.0"
   },
+  "jest": {
+    "preset": "ts-jest"
+  },
   "devDependencies": {
+    "@types/jest": "^25.1.4",
     "@zeit/ncc": "^0.20.5",
+    "jest": "^25.1.0",
     "prettier": "^1.19.1",
-    "typescript": "^3.7.2"
+    "ts-jest": "^25.2.1",
+    "typescript": "^3.8.3"
   }
 }
