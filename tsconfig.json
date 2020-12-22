@@ -4,6 +4,8 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "strictNullChecks": true,
     "skipLibCheck": true
   },
   "include": [

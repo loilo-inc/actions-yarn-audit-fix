@@ -22,6 +22,14 @@ async function exec(cmd: string, args: string[]): Promise<void> {
   });
 }
 
+async function checkDiff(): Promise<boolean> {
+  return new Promise<boolean>((resolve, reject) => {
+    cp.exec("git diff --exit-code")
+      .on("close", code => resolve(code === 1))
+      .on("error", reject)
+  })
+}
+
 async function commitAndPush({
   branch,
   message,
@@ -85,6 +93,11 @@ async function main({
     ];
     const branch = `audit-${yyyy}${MM}${dd}`;
     const title = `audit: ${[...packages.values()].join(" ")}`;
+    const hasDiff = await checkDiff();
+    if (!hasDiff) {
+      core.warning(`Audit succeeded but packages hasn't been upgraded`)
+      return
+    }
     await commitAndPush({
       branch,
       owner,

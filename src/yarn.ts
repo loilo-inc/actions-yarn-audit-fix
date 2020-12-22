@@ -1,6 +1,6 @@
 import * as cp from "child_process";
 
-export function isAdvisory(x): x is AuditAdvisory {
+export function isAdvisory(x: any): x is AuditAdvisory {
   return typeof x === "object" && x["type"] === "auditAdvisory";
 }
 export type AuditResult = (AuditAdvisory | AuditSummary)[];
