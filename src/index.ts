@@ -114,7 +114,7 @@ async function main({
       repo,
       title,
       head: branch,
-      base: "master"
+      base: "main"
     });
     console.log(`PR created on ${resp.data.url}`);
   }
