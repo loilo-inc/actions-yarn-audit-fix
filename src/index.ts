@@ -1,6 +1,6 @@
 import * as cp from "child_process";
 import * as core from "@actions/core";
-import * as github from "@actions/github";
+import {getOctokit} from "@actions/github";
 import { isAdvisory, getAuditResults } from "./yarn";
 
 async function exec(cmd: string, args: string[]): Promise<void> {
@@ -107,7 +107,7 @@ async function main({
       email,
       message: title
     });
-    const octkit = new github.GitHub(token);
+    const octkit = getOctokit(token);
     // @ts-ignore
     const resp = await octkit.pulls.create({
       owner,
