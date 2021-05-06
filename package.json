@@ -6,8 +6,8 @@
   "author": "keroxp <kerokerokerop@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.x",
-    "@actions/github": "^1.x"
+    "@actions/core": "^1.2.7",
+    "@actions/github": "^4.0.0"
   },
   "jest": {
     "preset": "ts-jest"
