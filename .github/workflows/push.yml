@@ -12,5 +12,5 @@ jobs:
       - run: yarn run tsc --noEmit
       - name: Check lib
         run: |
-          make lib/index.js
+          yarn build
           git diff --exit-code
