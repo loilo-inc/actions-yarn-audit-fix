@@ -8,7 +8,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14"
-      - run: tsc --noEmit
+      - run: yarn run tsc --noEmit
       - name: Check lib
         run: |
           make build
