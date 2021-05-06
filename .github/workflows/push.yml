@@ -9,6 +9,6 @@ jobs:
           node-version: "14"
       - name: Check lib
       - run: tsc --noEmit
-        run: |
+      - run: |
           make build
           git diff --exit-code
