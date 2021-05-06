@@ -7,8 +7,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14"
-      - name: Check lib
       - run: tsc --noEmit
-      - run: |
+      - name: Check lib
+        run: |
           make build
           git diff --exit-code
