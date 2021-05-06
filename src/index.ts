@@ -1,7 +1,7 @@
 import * as cp from "child_process";
 import * as core from "@actions/core";
-import {getOctokit} from "@actions/github";
-import { isAdvisory, getAuditResults } from "./yarn";
+import { getOctokit } from "@actions/github";
+import { getAuditResults, extractTransitiveRoots } from "./yarn";
 
 async function exec(cmd: string, args: string[]): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -20,14 +20,6 @@ async function exec(cmd: string, args: string[]): Promise<void> {
         : reject(new Error(`child process exited on ${code}`));
     });
   });
-}
-
-async function checkDiff(): Promise<boolean> {
-  return new Promise<boolean>((resolve, reject) => {
-    cp.exec("git diff --exit-code")
-      .on("close", code => resolve(code === 1))
-      .on("error", reject)
-  })
 }
 
 async function commitAndPush({
@@ -71,20 +63,26 @@ async function main({
   email: string;
 }) {
   const results = await getAuditResults(process.cwd());
-  const packages = new Set<string>();
-  let vulCnt = 0;
-  for (const item of results) {
-    if (isAdvisory(item)) {
-      vulCnt++;
-      const [pkg] = item.data.resolution.path.split(">");
-      packages.add(pkg);
-    }
-  }
-  if (packages.size === 0) {
+  const packages = extractTransitiveRoots(results);
+  if (results.length === 0) {
     console.log("No vulnerabilities found");
   } else {
-    console.log(`${vulCnt} vulnerabilities found in ${packages.size} packages`);
+    console.log(
+      `${results.length} vulnerabilities found in ${packages.length} packages`
+    );
     await exec("yarn", ["upgrade", ...packages.values()]);
+    const fixedResults = await getAuditResults(process.cwd());
+    const unfixedPackages = extractTransitiveRoots(results);
+    if (fixedResults.length > 0) {
+      const list = unfixedPackages.join(", ");
+      core.warning(
+        `Audit done but still have unfixed vulnerabilities: ${list}`
+      );
+    }
+    if (packages.length === unfixedPackages.length) {
+      core.warning("No packages have been actually fixed. Skip creating PR.");
+      return;
+    }
     const now = new Date();
     const [yyyy, MM, dd] = [
       now.getFullYear(),
@@ -93,11 +91,6 @@ async function main({
     ];
     const branch = `audit-${yyyy}${MM}${dd}`;
     const title = `audit: ${[...packages.values()].join(" ")}`;
-    const hasDiff = await checkDiff();
-    if (!hasDiff) {
-      core.warning(`Audit succeeded but packages hasn't been upgraded`)
-      return
-    }
     await commitAndPush({
       branch,
       owner,
@@ -108,13 +101,14 @@ async function main({
       message: title
     });
     const octkit = getOctokit(token);
-    // @ts-ignore
+    const repository = await octkit.repos.get();
+    const defaultBranch = repository.data.default_branch;
     const resp = await octkit.pulls.create({
       owner,
       repo,
       title,
       head: branch,
-      base: "main"
+      base: defaultBranch
     });
     console.log(`PR created on ${resp.data.url}`);
   }

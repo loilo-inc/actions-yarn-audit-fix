@@ -102,3 +102,7 @@ export async function getAuditResults(cwd: string): Promise<AuditResult> {
     );
   });
 }
+
+export function extractTransitiveRoots(results: AuditResult): string[] {
+  return Array.from(new Set(results.filter(isAdvisory).map(v => v.data.resolution.path.split(">")[0])).values())
+}
