@@ -101,9 +101,9 @@ async function main({
       message: title
     });
     const octkit = getOctokit(token);
-    const repository = await octkit.repos.get();
+    const repository = await octkit.rest.repos.get();
     const defaultBranch = repository.data.default_branch;
-    const resp = await octkit.pulls.create({
+    const resp = await octkit.rest.pulls.create({
       owner,
       repo,
       title,
