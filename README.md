@@ -1,2 +1,2 @@
 # actions-yarn-audit-fix
-Github actions that fixes yarn audit
+# DEPRECATED DO NOT USE (2022/11/07)
